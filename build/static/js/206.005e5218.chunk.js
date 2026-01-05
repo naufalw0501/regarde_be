@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunkhiventory_frontend=self.webpackChunkhiventory_frontend||[]).push([[206],{8206:(e,t,n)=>{n.r(t),n.d(t,{default:()=>s});var o=n(5043),r=n(3216);const s=()=>{const{pathname:e}=(0,r.zy)();return(0,o.useEffect)((()=>{window.scrollTo({top:0,left:0,behavior:"auto"})}),[e]),null}}}]);
+//# sourceMappingURL=206.005e5218.chunk.js.map
