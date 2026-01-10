@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>WebP Image Converter</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- React & ReactDOM via CDN -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #f3f4f6;
+      margin: 0;
+      padding: 40px;
+    }
+    .card {
+      max-width: 480px;
+      margin: auto;
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    h1 { font-size: 20px; margin-bottom: 16px; }
+    select, input, button {
+      width: 100%;
+      margin-bottom: 12px;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #d1d5db;
+    }
+    button {
+      background: #2563eb;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:disabled {
+      background: #9ca3af;
+    }
+    small { color: #6b7280; }
+  </style>
+</head>
+<body>
+
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState } = React;
+
+    function App() {
+      const [files, setFiles] = useState([]);
+      const [category, setCategory] = useState('logo');
+
+      const convertImage = (file) => {
+        return new Promise((resolve) => {
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+
+            let quality = 0.8;
+            let maxWidth = img.width;
+
+            if (category === 'logo') {
+              quality = 0.7;
+              maxWidth = Math.min(800, img.width);
+            }
+
+            if (category === 'hero') {
+              quality = 0.9;
+              maxWidth = Math.min(2560, img.width);
+            }
+
+            const scale = maxWidth / img.width;
+            canvas.width = maxWidth;
+            canvas.height = img.height * scale;
+
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+            canvas.toBlob((blob) => {
+              const baseName = file.name.replace(/\.[^/.]+$/, '');
+              resolve({
+                blob,
+                filename: baseName + '.webp'
+              });
+            }, 'image/webp', quality);
+          };
+
+          img.src = URL.createObjectURL(file);
+        });
+      };
+
+      const handleConvert = async () => {
+        for (const file of files) {
+          const { blob, filename } = await convertImage(file);
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = filename;
+          a.click();
+          URL.revokeObjectURL(url);
+        }
+      };
+
+      return (
+        <div className="card">
+          <h1>WebP Image Converter</h1>
+
+          <select value={category} onChange={e => setCategory(e.target.value)}>
+            <option value="logo">Logo (Small)</option>
+            <option value="hero">Hero (Fullscreen)</option>
+          </select>
+
+          <input
+            type="file"
+            multiple
+            accept="image/png,image/jpeg,image/webp"
+            onChange={e => setFiles([...e.target.files])}
+          />
+
+          <button disabled={!files.length} onClick={handleConvert}>
+            Convert & Download
+          </button>
+
+          <small>
+            Output otomatis WebP dengan nama file yang sama
+          </small>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
