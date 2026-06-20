@@ -8,7 +8,7 @@ app.use(express.static(path.join(__dirname, 'build')));
 
 // route khusus untuk converter
 app.get('/converter', (req, res) => {
-  res.sendFile(path.join(__dirname, 'build', 'converter.html'));
+  res.sendFile(path.join(__dirname, 'converter.html'));
 });
 
 // fallback untuk React Router
