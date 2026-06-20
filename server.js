@@ -6,6 +6,11 @@ const PORT = 3004;
 
 app.use(express.static(path.join(__dirname, 'build')));
 
+// route khusus untuk converter
+app.get('/converter', (req, res) => {
+  res.sendFile(path.join(__dirname, 'build', 'converter.html'));
+});
+
 // fallback untuk React Router
 app.get(/.*/, (req, res) => {
   res.sendFile(path.join(__dirname, 'build', 'index.html'));
